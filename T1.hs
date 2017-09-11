@@ -81,13 +81,15 @@ instance Semigroup (Predicate a) where
 --OR operaation on assosiatiivinen  
 --k
 newtype Endo a = Endo {appEndo :: a -> a}
-instance Semigroup (Endo a) where
-  (<>) (Endo a) (Endo b)  = Endo (a . b)
+instance Monoid (Endo a) where
+  mempty = Endo (\a->a)
+  mappend (Endo a) (Endo b)  = Endo (a . b)
 --(.) f g = \x -> f (g x)
 --(Endo a <> Endo b) <> Endo c == Endo (a . b) <> Endo c = Endo ((a . b) . c)
 -- == Endo (\x -> a (b x)) . c == Endo (\x -> a (b (c x)))
 --Endo a <> (Endo b <> Endo c) == Endo a <> Endo (b . c) = Endo (a . (b . c))
 -- == Endo (a . (\x -> b (c x))) == Endo (\x -> a (b (c x)))
+-- mepty ei triviaalisti muuta mit‰‰n.
 --l
 newtype Fun a b = Fun {getFun :: a->b}
 instance (Monoid b) => Semigroup (Fun a b) where
@@ -108,7 +110,9 @@ instance (Monoid a, Monoid b) => Monoid (Pair a b) where
 --toiminta memptyn kanssa on triviaalisti tosi.
 --n
 newtype Kissa a = Kissa {getKissa :: IO a}
-instance (Monoid a) =>Semigroup (Kissa a) where
-  (<>) (Kissa a) (Kissa b) = Kissa (a >> b)
+instance (Monoid a) =>Monoid (Kissa a) where
+  mempty = Kissa (return (mempty))
+  mappend (Kissa a) (Kissa b) = Kissa (a >> b)
 --Puoliryhm‰n j‰senten j‰rjestys ei miss‰‰nkohtaa muutu
+--Tyhj‰n palauttaminen vain palauttaa tyhj‰n eik‰ tee mit‰‰n.
 
