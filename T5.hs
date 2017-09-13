@@ -1,4 +1,4 @@
-  
+  {-#LANGUAGE GADTs#-}
 class MyFunctor f where
   fmap :: (a -> b) -> (f a -> f b)
 
@@ -36,4 +36,20 @@ instance (Functor f) => Functor (UpStar f a) where
 --(a -> b) -> (r -> f a) -> (r -> f b)
   
 --mitähän ihmettä tässä on tarkoitus tehdä kun en osaa luoda edes datatyyppiä.
---data Coyoneda f a where Coyoneda :: (b -> a) -> f b -> Coyoneda f a
+data Coyoneda f a where Coyoneda :: (b -> a) -> f b -> Coyoneda f a
+--data Coyoneda f a = forall b. Coyoneda (r -> a) (f r)
+--{-# LANGUAGE ExistentialQuantification #-}
+
+instance Functor (Coyoneda a) where
+    fmap fu (Coyoneda s1 s2) = Coyoneda g s2 where
+      g h j = fu . s1
+-- fu :: a -> b
+-- h :: (r -> b)
+-- j :: f r
+-- g :: (r -> b) -> f r -> Coyoneda f b
+-- s1 :: (r -> a) ??
+-- s2 :: f r ??
+--(a -> b) -> ((r -> a) -> f r -> Coyoneda f a) -> ((r -> b) -> f r -> Coyoneda f b)
+
+-- s :: (r -> a) -> f r -> Coyoneda f a
+  
