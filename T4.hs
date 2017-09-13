@@ -25,15 +25,16 @@ newtype Endo a = Endo {appEndo :: a -> a}
 
 newtype Kissa a b = Kissa {kissaks :: a -> b}
 instance ProFunctor (Kissa) where
-  promap f1 f2 (Kissa f) = Kissa (f2 . f . f1 )
---Functor
+  promap f1 f2 (Kissa f) = Kissa (f2 . f . f1)
+  
+instance MyFunctor (Kissa a) where
+  fmap fu (Kissa f) = Kissa (fu . f)
   
 newtype Ehka a = Ehka {ehka :: Maybe a}
 instance Functor Ehka where
   fmap f (Ehka (a)) = case a of 
     Just x -> Ehka (Just (f x))
     Nothing -> Ehka Nothing
---Jatkuu????
 
 newtype RIO a b = RIO {runRIO :: a -> IO b}
 instance ProFunctor (RIO) where
@@ -42,3 +43,11 @@ instance ProFunctor (RIO) where
       a <- ioa
       return (f2 a)
 
+instance MyFunctor (RIO a) where
+  fmap f (RIO (ioa)) = RIO (foo . ioa) where
+      foo x =
+        do
+       a <- x
+       return (f a)
+        
+    
